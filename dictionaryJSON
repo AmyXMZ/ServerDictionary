@@ -1,8 +1,1 @@
-{"apple": ["a fruit", "a tech company"],
-"dictionary": ["a data structure in Python", "a reference book to loop up word definitions"],
-"fall": ["a verb meaning to move downward due to gravity", "a season"],
-"bow": ["a verb meaning to bend forward to show respect", "a noun meaning a bow tie"],
-"date": ["a specific day of a month or year", "a situation where two people who go out to have a romantic time together", "the person you go on a date with"],
-"second": ["comes after the first in a series", "a unit of time", "to agree with someone"],
-"type": ["a particular kind of things", "a verb meaning to write with a keyboard"],
-"mine": ["that which belongs to me", "a tunnel from which minerals are taken", "a verb meaning to dig a mine"]}
+{"date":["a specific day of a month or year","a situation where two people who go out to have a romantic time together","the person you go on a date with"],"mine":["that which belongs to me","a tunnel from which minerals are taken","a verb meaning to dig a mine"],"apple":["a fruit","a tech company"],"dictionary":["a data structure in Python","a reference book to loop up word definitions"],"fall":["a verb meaning to move downward due to gravity","a season"],"bow":["a verb meaning to bend forward to show respect","a noun meaning a bow tie"],"type":["a particular kind of things","a verb meaning to write with a keyboard","a kind of people that someone likes"],"second":["comes after the first in a series","a unit of time","to agree with someone"],"example":["a representative case","a sample used for explanation"]}

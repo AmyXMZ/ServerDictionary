@@ -27,9 +27,9 @@ public class Server {
         {
             System.out.println("Waiting for client connection-");
             //handling multiple clients
-            HashMap<Integer, Clients> clientsHashMap = new HashMap<Integer, Clients>();
+            //HashMap<Integer, Clients> clientsHashMap = new HashMap<Integer, Clients>();
             // serverGUI
-            serverUI = new ServerUI(clientsHashMap, serverSocket);
+            //serverUI = new ServerUI(clientsHashMap, serverSocket);
 
             // Wait for connections.
             while(true)
