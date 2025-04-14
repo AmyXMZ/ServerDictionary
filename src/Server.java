@@ -14,7 +14,9 @@ public class Server {
     private static int port = 3005;
 
     // Identifies the user number connected
-    private static int counter = 0;
+    private static int num_clients = 0;
+    private static final Dictionary dictionary = new Dictionary();
+
 
     public static void main(String[] args)
     {
@@ -23,24 +25,19 @@ public class Server {
         // which can create normal (non-secure) server sockets
         ServerSocketFactory factory = ServerSocketFactory.getDefault();
 
-        try(ServerSocket server = factory.createServerSocket(port))
+        try(ServerSocket serverSocket = factory.createServerSocket(port))
         {
             System.out.println("Waiting for client connection-");
-            //handling multiple clients
-            //HashMap<Integer, Clients> clientsHashMap = new HashMap<Integer, Clients>();
-            // serverGUI
-            //serverUI = new ServerUI(clientsHashMap, serverSocket);
 
-            // Wait for connections.
             while(true)
             {
-                Socket client = server.accept();
-                counter++;
-                System.out.println("Client "+counter+": Applying for connection!");
+                Socket client = serverSocket.accept();
+                num_clients++;
+                System.out.println("Client "+num_clients+": Applying for connection!");
 
                 // Start a new thread for a connection
-                Thread t = new Thread(() -> serveClient(client));
-                t.start();
+                Thread thread = new Thread(new ThreadPerClient(client, dictionary, num_clients));
+                thread.start();
             }
 
         }
@@ -51,7 +48,7 @@ public class Server {
 
     }
 
-    private static void serveClient(Socket client)
+    private static void serveClient(Socket client, Dictionary dictionary, int clientNum)
     {
         try(Socket clientSocket = client)
         {
@@ -62,7 +59,10 @@ public class Server {
 
             System.out.println("CLIENT: "+input.readUTF());
 
-            output.writeUTF("Server: Hi Client "+counter+" !!!");
+            output.writeUTF("Server: Hi Client "+num_clients+" !!!");
+            // Initial greeting
+            output.writeUTF("📚 Welcome to the Dictionary Server! Type commands like: ADD word:meaning, QUERY word, REMOVE word");
+
         }
         catch (IOException e)
         {
