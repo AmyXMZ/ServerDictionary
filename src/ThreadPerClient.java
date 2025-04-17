@@ -8,6 +8,7 @@ public class ThreadPerClient implements Runnable {
     private Dictionary dictionary;
     private Socket clientSocket;
     private int clientNum;
+
     private DataInputStream input;
     private DataOutputStream output;
     private static final Set<String> validRequest = Set.of("addword", "removeword", "querymeanings", "addmeaning", "updatemeaning", "quit");
