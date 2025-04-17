@@ -3,6 +3,7 @@ import java.lang.reflect.Type;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import com.google.gson.Gson;
@@ -44,24 +45,44 @@ public class Dictionary { // this class will handle dictionary data
         }
     }
 
-    public synchronized String addWord(String word, List<String> meanings){ ///test if the concurrent client access works
+//    public synchronized String addWord(String word, List<String> meanings){ ///test if the concurrent client access works
+//        word = word.toLowerCase();
+//        List<String> to_lower_meanings = new ArrayList<>();
+//        for (String item : meanings) {
+//            to_lower_meanings.add(item.toLowerCase());
+//        }
+//        meanings = to_lower_meanings;
+//        boolean isValidWord = word.matches("[a-z]+");
+//        boolean isValidMeaning = meanings.stream()
+//                .allMatch(i -> i.matches("[a-z .,()'\";:?!\\-]+"));
+//        if (isValidWord && isValidMeaning){
+//            if (word_meaning_hashmap.containsKey(word)) {
+//                return "Duplicate word!";
+//            }else{ //add it to the dictionary file
+//                word_meaning_hashmap.put(word, meanings);
+//                writeDictFile();
+//                return "Success: word added!";
+//            }
+//        }else{
+//            return "Not an English word or a valid meaning. Try again.";
+//        }
+//    }
+    //this below method accept one word and one meaning (both are of type String)
+    public synchronized String addWord(String word, String meaning){ ///test if the concurrent client access works
         word = word.toLowerCase();
-        List<String> to_lower_meanings = new ArrayList<>();
-        for (String item : meanings) {
-            to_lower_meanings.add(item.toLowerCase());
-        }
-        meanings = to_lower_meanings;
+
+        meaning = meaning.toLowerCase();
         boolean isValidWord = word.matches("[a-z]+");
-        boolean isValidMeaning = meanings.stream()
-                .allMatch(i -> i.matches("[a-z .,()'\";:?!\\-]+"));
+        boolean isValidMeaning = meaning.matches("[a-z .,()'\";:?!\\-]+");
         if (isValidWord && isValidMeaning){
             if (word_meaning_hashmap.containsKey(word)) {
                 return "Duplicate word!";
             }else{ //add it to the dictionary file
+                List<String> meanings = Arrays.asList(meaning);
                 word_meaning_hashmap.put(word, meanings);
                 writeDictFile();
                 return "Success: word added!";
-                }
+            }
         }else{
             return "Not an English word or a valid meaning. Try again.";
         }

@@ -29,7 +29,7 @@ public class Server {
         {
             System.out.println("Waiting for client connection-");
 
-            while(true)
+            while(true) //multithreaded server
             {
                 Socket client = serverSocket.accept();
                 num_clients++;
