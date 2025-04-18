@@ -4,7 +4,14 @@ public class ResponseMessage { //need this for client side, also create a JsonRe
 
     public String errorMessage;
     public String status;
+
     public List<String> meanings;
+
+    public ResponseMessage(String status) {
+        //if the request is successful, simply return the success status
+        //this is for addword, removeword, addmeaning, and updatemeaning
+        this.status = status;
+    }
 
     public ResponseMessage(String status, String errorMessage) { //if not success
         this.status = status;
@@ -15,4 +22,6 @@ public class ResponseMessage { //need this for client side, also create a JsonRe
         this.status = status;
         this.meanings = meanings;
     }
+
+
 }

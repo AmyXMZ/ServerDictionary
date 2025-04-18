@@ -1,7 +1,9 @@
+import com.google.gson.Gson;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
+import java.util.List;
 import java.util.Set;
 
 public class ThreadPerClient implements Runnable {
@@ -11,7 +13,7 @@ public class ThreadPerClient implements Runnable {
 
     private DataInputStream input;
     private DataOutputStream output;
-    private static final Set<String> validRequest = Set.of("addword", "removeword", "querymeanings", "addmeaning", "updatemeaning", "quit");
+    private static final Set<String> validRequest = Set.of("addword", "removeword", "querymeanings", "addmeaning", "updatemeaning");
     // constructor for this class:
     public ThreadPerClient(Socket socket, Dictionary dictionary, int clientNum){
         this.clientSocket = socket;
@@ -40,15 +42,23 @@ public class ThreadPerClient implements Runnable {
             e.printStackTrace();
         }
         try {
-            String request;
+            String request; //json
+            Gson gson = new Gson();
             while (true){
                 request = input.readUTF(); //server reads the request sent by client
-                if (request == null || request.equalsIgnoreCase("quit")) {
-                    break;
-                }
-                System.out.println("Client" + clientNum + " requests: " + request);
-                String response = returnClientRequest(request, dictionary);
-                output.writeUTF(response); //server retrieve data and send it to client
+
+//                if (request == null || request.equalsIgnoreCase("quit")) {
+//                    break;
+//                }
+                //convert client request to java object from json
+                RequestMessage requestObject = gson.fromJson(request, RequestMessage.class);
+                String extracted_action = requestObject.getAction();
+                System.out.println("Client" + clientNum + " requests: " + extracted_action);
+                ResponseMessage response = handleClientRequest(requestObject);
+                //convert server response to json
+                String jsonResponse = gson.toJson(response);
+                //server sends the jsonResponse to client
+                output.writeUTF(jsonResponse);
             }
 
         } catch (IOException e) {
@@ -57,31 +67,54 @@ public class ThreadPerClient implements Runnable {
 
     }
 
-    private String returnClientRequest(String request, Dictionary dictionary) throws IOException{//parsing client's request and retrieve data
-        request = request.toLowerCase().trim();
-        boolean isValidRequest = validRequest.contains(request);
-        if (isValidRequest){
-            if (request.equals("querymeanings")){
+    private ResponseMessage handleClientRequest(RequestMessage request) {//parsing client's request and retrieve data
+        String action = request.getAction().toLowerCase();
+        String word = request.getWord().toLowerCase();
+        String meaning = request.getMeaning().toLowerCase();
+        String oldMeaning = request.getOldMeaning().toLowerCase();
+        String newMeaning = request.getNewMeaning().toLowerCase();
+        //checking the validity of action
+        if (!validRequest.contains(action)){
+            return new ResponseMessage("Error", "Incorrect request message. Check the available valid request messages and try again.");
+        }
+        switch(action){
+            case "addword":
+                String addWordResult = dictionary.addWord(word, meaning);
+                return helpShowStatusMessage(addWordResult);
+            case "removeword":
+                String removeWordResult = dictionary.removeWord(word);
+                return helpShowStatusMessage(removeWordResult);
+            case "querymeanings": // a special case, return list of string if successful
+                List<String> meanings = dictionary.queryMeanings(word);
+                if (meanings.get(0).startsWith("Not a valid word")
+                        || meanings.get(0).startsWith("The looked-up word")
+                        || meanings.get(0).startsWith("There is no such word")){
+                    return new ResponseMessage("Error", meanings.get(0));
+                }else{
+                    return new ResponseMessage("Success", meanings);
+                }
 
-            }
-            if (request.equals("addword")){
-                output.writeUTF("Enter the word: ");
-                String word = input.readUTF();
-                output.writeUTF("Enter the meaning of the word: ");
-                String meaning = input.readUTF();
-                return dictionary.addWord(word, meaning);
-            }
-            if (request.equals("removeword")){
-
-            }
-            if (request.equals("addmeaning")){
-
-            }
-            if (request.equals("updatemeaning")){
-
-            }
-        }else {
-            return "Invalid request. Enter again.";
+            case "addmeaning":
+                String addMeaningResult = dictionary.addMeaning(word, meaning);
+                return helpShowStatusMessage(addMeaningResult);
+            case "updatemeaning":
+                String updateMeaningResult = dictionary.updateMeaning(word, oldMeaning, newMeaning);
+                return helpShowStatusMessage(updateMeaningResult);
+            default:
+                return new ResponseMessage("Error", "Unknown error.");
         }
     }
+
+    //helper function, identify if the return string (except for the function queryMeanings),
+    // if return string starts with "Success", the operation is successful,
+    // else, return error and the corresponding error message from the functions
+    private ResponseMessage helpShowStatusMessage(String result) {
+        if (result.startsWith("Success")) {
+            return new ResponseMessage("Success");
+        } else {
+            return new ResponseMessage("Error", result); // Show actual dictionary error
+        }
+    }
+
+
 }
