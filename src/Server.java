@@ -43,26 +43,4 @@ public class Server {
     }
 }
 
-//    private static void serveClient(Socket client, Dictionary dictionary, int clientNum)
-//    {
-//        try(Socket clientSocket = client)
-//        {
-//            // Input stream
-//            DataInputStream input = new DataInputStream(clientSocket.getInputStream());
-//            // Output Stream
-//            DataOutputStream output = new DataOutputStream(clientSocket.getOutputStream());
-//
-//            System.out.println("CLIENT: "+input.readUTF());
-//
-//            output.writeUTF("Server: Hi Client "+num_clients+" !!!");
-//            // Initial greeting
-//            output.writeUTF("📚 Welcome to the Dictionary Server! Type commands like: ADD word:meaning, QUERY word, REMOVE word");
-//
-//        }
-//        catch (IOException e)
-//        {
-//            e.printStackTrace();
-//        }
-//    }
-
 

@@ -51,7 +51,7 @@ public class ThreadPerClient implements Runnable {
                 request = input.readUTF(); //server reads the request sent by client
                 //convert client request to java object from json
                 RequestMessage requestObject = gson.fromJson(request, RequestMessage.class);
-                String extracted_action = requestObject.getAction();
+                String extracted_action = requestObject.action;
                 System.out.println("Client" + clientNum + " requests: " + extracted_action);
                 ResponseMessage response = handleClientRequest(requestObject);
                 //convert server response to json
@@ -79,24 +79,24 @@ public class ThreadPerClient implements Runnable {
     }
 
     private ResponseMessage handleClientRequest(RequestMessage request) {//parsing client's request and retrieve data
-        String action = request.getAction().toLowerCase();
-        String word = request.getWord().toLowerCase();
-        String meaning = request.getMeaning().toLowerCase();
-        String oldMeaning = request.getOldMeaning().toLowerCase();
-        String newMeaning = request.getNewMeaning().toLowerCase();
+        //String action = request.action.toLowerCase();
+        //String word = request.word.toLowerCase();
+        //String meaning = request.getMeaning().toLowerCase();
+        //String oldMeaning = request.getOldMeaning().toLowerCase();
+        //String newMeaning = request.getNewMeaning().toLowerCase();
         //checking the validity of action
-        if (!validRequest.contains(action)){
+        if (!validRequest.contains(request.action)){
             return new ResponseMessage("Error", "Incorrect request message. Check the available valid request messages and try again.");
         }
-        switch(action){
+        switch(request.action){
             case "addword":
-                String addWordResult = dictionary.addWord(word, meaning);
+                String addWordResult = dictionary.addWord(request.word, request.meaning.toLowerCase());
                 return helpShowStatusMessage(addWordResult);
             case "removeword":
-                String removeWordResult = dictionary.removeWord(word);
+                String removeWordResult = dictionary.removeWord(request.word);
                 return helpShowStatusMessage(removeWordResult);
             case "querymeanings": // a special case, return list of string if successful
-                List<String> meanings = dictionary.queryMeanings(word);
+                List<String> meanings = dictionary.queryMeanings(request.word);
                 if (meanings.get(0).startsWith("Not a valid word")
                         || meanings.get(0).startsWith("The looked-up word")
                         || meanings.get(0).startsWith("There is no such word")){
@@ -106,10 +106,10 @@ public class ThreadPerClient implements Runnable {
                 }
 
             case "addmeaning":
-                String addMeaningResult = dictionary.addMeaning(word, meaning);
+                String addMeaningResult = dictionary.addMeaning(request.word, request.meaning.toLowerCase());
                 return helpShowStatusMessage(addMeaningResult);
             case "updatemeaning":
-                String updateMeaningResult = dictionary.updateMeaning(word, oldMeaning, newMeaning);
+                String updateMeaningResult = dictionary.updateMeaning(request.word, request.oldMeaning.toLowerCase(), request.newMeaning.toLowerCase());
                 return helpShowStatusMessage(updateMeaningResult);
             default:
                 return new ResponseMessage("Error", "Unknown error.");
