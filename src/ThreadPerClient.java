@@ -44,12 +44,11 @@ public class ThreadPerClient implements Runnable {
         try {
             String request; //json
             Gson gson = new Gson();
-            while (true){
-                request = input.readUTF(); //server reads the request sent by client
+            while (true){ //Reads requests from client continuously
+                //Parses and converts to RequestMessage
+                //Uses handleClientRequest() to generate response and sends it back as JSON
 
-//                if (request == null || request.equalsIgnoreCase("quit")) {
-//                    break;
-//                }
+                request = input.readUTF(); //server reads the request sent by client
                 //convert client request to java object from json
                 RequestMessage requestObject = gson.fromJson(request, RequestMessage.class);
                 String extracted_action = requestObject.getAction();
@@ -64,6 +63,18 @@ public class ThreadPerClient implements Runnable {
         } catch (IOException e) {
             e.printStackTrace();
         }
+// add exit mechanism!!!!! Test this!!!
+//        finally {
+//            try {
+//                if (clientSocket != null) {
+//                    output.close();
+//                    clientSocket.close();
+//                }
+//                System.out.println("Client " + clientNum + " disconnected.");
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
+//        }
 
     }
 
