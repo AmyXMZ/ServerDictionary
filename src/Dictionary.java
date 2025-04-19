@@ -3,8 +3,8 @@ import java.lang.reflect.Type;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -26,8 +26,14 @@ public class Dictionary { // this class will handle dictionary data
         try {
             String from_json = Files.readString(Path.of("dictionaryJSON"));
             Type hashMap = new TypeToken<ConcurrentHashMap<String, List<String>>>() {}.getType();
-            word_meaning_hashmap = gson.fromJson(from_json, hashMap);
-            //System.out.println(word_meaning_hashmap);
+            //word_meaning_hashmap = gson.fromJson(from_json, hashMap);
+            ConcurrentHashMap<String, List<String>> rawHM = gson.fromJson(from_json, hashMap); //gson converted might result in immutable list
+            // Convert all lists to mutable ArrayLists
+            word_meaning_hashmap = new ConcurrentHashMap<>();
+            for (Map.Entry<String, List<String>> entry : rawHM.entrySet()) {
+                word_meaning_hashmap.put(entry.getKey(), new ArrayList<>(entry.getValue()));
+            }
+
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -78,7 +84,8 @@ public class Dictionary { // this class will handle dictionary data
             if (word_meaning_hashmap.containsKey(word)) {
                 return "Duplicate word!";
             }else{ //add it to the dictionary file
-                List<String> meanings = Arrays.asList(meaning);
+                List<String> meanings = new ArrayList<>();
+                meanings.add(meaning);
                 word_meaning_hashmap.put(word, meanings);
                 writeDictFile();
                 return "Success: word added!";
@@ -111,15 +118,15 @@ public class Dictionary { // this class will handle dictionary data
             if (word_meaning_hashmap.containsKey(word)){
                 List<String> meanings_list = word_meaning_hashmap.get(word);
                 if (meanings_list != null){
-                    return word_meaning_hashmap.get(word); //convert to JSON?
-                }else{
-                    return List.of("The looked-up word does not have any associated meaning!");
+                    return new ArrayList<>(meanings_list); //convert to JSON?
+                }else{//note that List.of results in immutable list!!
+                    return new ArrayList<>(List.of("The looked-up word does not have any associated meaning!"));
                 }
             }else{
-                return List.of("There is no such word in the dictionary!");
+                return new ArrayList<>(List.of("There is no such word in the dictionary!"));
             }
         }else{
-            return List.of("Not a valid word. Try again.");
+            return new ArrayList<>(List.of("Not a valid word. Try again."));
         }
     }
 
