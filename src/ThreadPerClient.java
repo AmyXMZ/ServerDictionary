@@ -56,24 +56,28 @@ public class ThreadPerClient implements Runnable {
                 //Parses and converts to RequestMessage
                 //Uses handleClientRequest() to generate response and sends it back as JSON
 
-                request = input.readUTF(); //server reads the request sent by client
-                //convert client request to java object from json
-                RequestMessage requestObject = gson.fromJson(request, RequestMessage.class);
-                String extracted_action = requestObject.action;
-                System.out.println("Client" + clientNum + " requests: " + extracted_action);
-                ResponseMessage response = handleClientRequest(requestObject);
-                if (response == null || "quit".equalsIgnoreCase(requestObject.action)) { //quit the loop on exit
-                    System.out.println("Client " + clientNum + " wanted to close connection.");
-                    break;
+                try{
+                    request = input.readUTF(); //server reads the request sent by client
+                    //convert client request to java object from json
+                    RequestMessage requestObject = gson.fromJson(request, RequestMessage.class);
+                    String extracted_action = requestObject.action;
+                    System.out.println("Client" + clientNum + " requests: " + extracted_action);
+                    ResponseMessage response = handleClientRequest(requestObject);
+                    if (response == null || "quit".equalsIgnoreCase(requestObject.action)) { //quit the loop on exit
+                        System.out.println("Client " + clientNum + " wanted to close connection.");
+                        break;
+                    }
+                    //convert server response to json
+                    String jsonResponse = gson.toJson(response);
+                    //server sends the jsonResponse to client
+                    output.writeUTF(jsonResponse);
+                }catch (EOFException e) {
+                    System.out.println("Client " + clientNum + " has disconnected.");
+                    return;
                 }
-                //convert server response to json
-                String jsonResponse = gson.toJson(response);
-                //server sends the jsonResponse to client
-                output.writeUTF(jsonResponse);
+
             }
 
-        } catch (EOFException e) {
-            System.out.println("Client " + clientNum + " has disconnected.");
         } catch (IOException e) {
             System.out.println("I/O error: client " + clientNum + ": " + e.getMessage());
             //e.printStackTrace();
