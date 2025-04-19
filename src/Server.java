@@ -25,19 +25,25 @@ public class Server {
 
             while (true) //multithreaded server
             {
-                Socket client = serverSocket.accept();
-                num_clients++;
-                System.out.println("Client " + num_clients + ": Applying for connection!");
+                try{
+                    Socket client = serverSocket.accept();
+                    num_clients++;
+                    System.out.println("Client " + num_clients + ": Applying for connection!");
 
-                // Start a new thread for a connection
-                Thread thread = new Thread(new ThreadPerClient(client, dictionary, num_clients));
-                //for debugging purpose
-                //thread.setName("Client-" + num_clients);
-                thread.start();
+                    // Start a new thread for a connection
+                    Thread thread = new Thread(new ThreadPerClient(client, dictionary, num_clients));
+                    //for debugging purpose
+                    //thread.setName("Client-" + num_clients);
+                    thread.start();
+                }catch (IOException e) {
+                    System.out.println("Error: unable to accept a client connection: " + e.getMessage());
+                }
+
             }
 
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println("I/O error: server is unable to start: " + e.getMessage());
+            //e.printStackTrace();
         }
 
     }

@@ -1,6 +1,9 @@
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
+
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.EOFException;
 import java.io.IOException;
 import java.net.Socket;
 import java.util.List;
@@ -27,19 +30,24 @@ public class ThreadPerClient implements Runnable {
         try {
             input = new DataInputStream(clientSocket.getInputStream());
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println("Error: unable to establish data input communication stream with client.");
+            //e.printStackTrace();
         }
         try {
             output = new DataOutputStream(clientSocket.getOutputStream());
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println("Error: unable to establish data output communication stream with client.");
+            //e.printStackTrace();
         }
         try { // (server to client)
 
             output.writeUTF("Server: Hi Client "+ clientNum +" !!!");
             output.writeUTF("This is the Dictionary Server! Enter one of the commands below: addword, removeword, querymeanings, addmeaning, updatemeaning.");
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println("Error: unable to send the message to client.");
+            //e.printStackTrace();
+        }catch (JsonSyntaxException e) {
+            System.out.println("Error: invalid JSON from client received.");
         }
         try {
             String request; //json
@@ -64,9 +72,15 @@ public class ThreadPerClient implements Runnable {
                 output.writeUTF(jsonResponse);
             }
 
+        } catch (EOFException e) {
+            System.out.println("Client " + clientNum + " has disconnected.");
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println("I/O error: client " + clientNum + ": " + e.getMessage());
+            //e.printStackTrace();
+        }catch (JsonSyntaxException e) {
+            System.out.println("Error: invalid JSON from client received.");
         }
+
 // add exit mechanism!!!!!
         finally {
             try {
@@ -81,7 +95,8 @@ public class ThreadPerClient implements Runnable {
                 }
                 System.out.println("Client " + clientNum + " closed its connection successfully.");
             } catch (IOException e) {
-                e.printStackTrace();
+                System.out.println("Error: unable to close client" + clientNum + " socket.");
+                //e.printStackTrace();
             }
         }
     }

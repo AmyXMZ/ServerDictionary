@@ -1,12 +1,14 @@
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 
 public class Dictionary { // this class will handle dictionary data
@@ -34,8 +36,13 @@ public class Dictionary { // this class will handle dictionary data
                 word_meaning_hashmap.put(entry.getKey(), new ArrayList<>(entry.getValue()));
             }
 
+        } catch (NoSuchFileException e) {
+            System.out.println("Error: the dictionary file 'dictionaryJSON' is not found.");
         } catch (IOException e) {
+            System.out.println("Error loading the dictionary file. See error message: " + e.getMessage());
             e.printStackTrace();
+        }catch (JsonSyntaxException e) {
+            System.out.println("Error: the dictionary file contains invalid JSON. See error message: " + e.getMessage());
         }
     }
 
@@ -46,7 +53,7 @@ public class Dictionary { // this class will handle dictionary data
         try {
             Files.writeString(Path.of("dictionaryJSON"), to_json);
         } catch (IOException e) {//error handling
-            System.out.println("Error: unable to save to dictionary file. Details: " + e.getMessage());
+            System.out.println("Error: unable to save (write) to dictionary file. See error message: " + e.getMessage());
             //e.printStackTrace();
         }
     }
@@ -191,17 +198,17 @@ public class Dictionary { // this class will handle dictionary data
             return "Not a valid word or not an existing word. Try again.";
         }
     }
-    public static void main(String[] args){
-        Dictionary dict = new Dictionary();
-        String testWord = "type";
-        String testMeanings = "a kind of people that someone likes"; //newMeaning
-        String oldMeaning = "a kind of people or personality that someone likes";
-        //List<String> testMeanings = List.of("a representative case", "a sample used for explanation");
-        //String result = dict.addWord(testWord,testMeanings);
-        //List<String> result = dict.queryMeanings(testWord);
-        String result = dict.updateMeaning(testWord, oldMeaning, testMeanings);
-        //String result = dict.removeWord(testWord);
-        System.out.println(result);
-
-    }
+//    public static void main(String[] args){
+//        Dictionary dict = new Dictionary();
+//        String testWord = "type";
+//        String testMeanings = "a kind of people that someone likes"; //newMeaning
+//        String oldMeaning = "a kind of people or personality that someone likes";
+//        //List<String> testMeanings = List.of("a representative case", "a sample used for explanation");
+//        //String result = dict.addWord(testWord,testMeanings);
+//        //List<String> result = dict.queryMeanings(testWord);
+//        String result = dict.updateMeaning(testWord, oldMeaning, testMeanings);
+//        //String result = dict.removeWord(testWord);
+//        System.out.println(result);
+//
+//    }
 }
