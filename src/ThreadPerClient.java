@@ -13,7 +13,7 @@ public class ThreadPerClient implements Runnable {
 
     private DataInputStream input;
     private DataOutputStream output;
-    private static final Set<String> validRequest = Set.of("addword", "removeword", "querymeanings", "addmeaning", "updatemeaning");
+    private static final Set<String> validRequest = Set.of("addword", "removeword", "querymeanings", "addmeaning", "updatemeaning", "quit");
     // constructor for this class:
     public ThreadPerClient(Socket socket, Dictionary dictionary, int clientNum){
         this.clientSocket = socket;
@@ -54,6 +54,10 @@ public class ThreadPerClient implements Runnable {
                 String extracted_action = requestObject.action;
                 System.out.println("Client" + clientNum + " requests: " + extracted_action);
                 ResponseMessage response = handleClientRequest(requestObject);
+                if (response == null || "quit".equalsIgnoreCase(requestObject.action)) { //quit the loop on exit
+                    System.out.println("Client " + clientNum + " wanted to close connection.");
+                    break;
+                }
                 //convert server response to json
                 String jsonResponse = gson.toJson(response);
                 //server sends the jsonResponse to client
@@ -63,27 +67,26 @@ public class ThreadPerClient implements Runnable {
         } catch (IOException e) {
             e.printStackTrace();
         }
-// add exit mechanism!!!!! Test this!!!
-//        finally {
-//            try {
-//                if (clientSocket != null) {
-//                    output.close();
-//                    clientSocket.close();
-//                }
-//                System.out.println("Client " + clientNum + " disconnected.");
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
-//        }
-
+// add exit mechanism!!!!!
+        finally {
+            try {
+                if (input != null) {
+                    input.close();
+                }
+                if (output != null){
+                    output.close();
+                }
+                if (clientSocket != null) {
+                    clientSocket.close();
+                }
+                System.out.println("Client " + clientNum + " closed its connection successfully.");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     private ResponseMessage handleClientRequest(RequestMessage request) {//parsing client's request and retrieve data
-        //String action = request.action.toLowerCase();
-        //String word = request.word.toLowerCase();
-        //String meaning = request.getMeaning().toLowerCase();
-        //String oldMeaning = request.getOldMeaning().toLowerCase();
-        //String newMeaning = request.getNewMeaning().toLowerCase();
         //checking the validity of action
         if (!validRequest.contains(request.action)){
             return new ResponseMessage("Error", "Incorrect request message. Check the available valid request messages and try again.");
@@ -111,6 +114,9 @@ public class ThreadPerClient implements Runnable {
             case "updatemeaning":
                 String updateMeaningResult = dictionary.updateMeaning(request.word, request.oldMeaning.toLowerCase(), request.newMeaning.toLowerCase());
                 return helpShowStatusMessage(updateMeaningResult);
+            case "quit": //error handling: closing the client connection
+                return null;
+
             default:
                 return new ResponseMessage("Error", "Unknown error.");
         }

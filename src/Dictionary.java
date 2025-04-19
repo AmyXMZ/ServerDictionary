@@ -45,9 +45,9 @@ public class Dictionary { // this class will handle dictionary data
         String to_json = gson.toJson(word_meaning_hashmap);
         try {
             Files.writeString(Path.of("dictionaryJSON"), to_json);
-        } catch (IOException e) {
-            System.out.println("Unable to save to dictionary file.");
-            e.printStackTrace();
+        } catch (IOException e) {//error handling
+            System.out.println("Error: unable to save to dictionary file. Details: " + e.getMessage());
+            //e.printStackTrace();
         }
     }
 

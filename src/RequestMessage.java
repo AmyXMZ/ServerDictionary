@@ -8,6 +8,9 @@ public class RequestMessage { //represents a parsed request from client
     public String oldMeaning;
     //public List<String> meanings;
 
+    public RequestMessage(String action){
+        this.action = action; //for quitting
+    }
     public RequestMessage(String action, String word) {
         this.action = action; //querymeaning or removeword
         this.word = word;
