@@ -17,7 +17,7 @@ public class Dictionary { // this class will handle dictionary data
     private Gson gson = new Gson();
 
     // constructor for this class
-    public Dictionary() {
+    public Dictionary(String dict_file_path) {
         word_meaning_hashmap = new ConcurrentHashMap<String, List<String>>();
         loadDictFile(); //load the dictionary file as Dictionary is initialized
     }
@@ -26,7 +26,7 @@ public class Dictionary { // this class will handle dictionary data
     public void loadDictFile(){
         //read from file and convert JSON to concurrentHashMap
         try {
-            String from_json = Files.readString(Path.of("dictionaryJSON"));
+            String from_json = Files.readString(Path.of(dict_file_path));
             Type hashMap = new TypeToken<ConcurrentHashMap<String, List<String>>>() {}.getType();
             //word_meaning_hashmap = gson.fromJson(from_json, hashMap);
             ConcurrentHashMap<String, List<String>> rawHM = gson.fromJson(from_json, hashMap); //gson converted might result in immutable list

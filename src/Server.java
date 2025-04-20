@@ -11,8 +11,8 @@ public class Server {
 
     // Identifies the user number connected
     private static int num_clients = 0;
-    private static final Dictionary dictionary = new Dictionary();
-
+    private static final String dict_file_path = "dictionaryJSON";
+    private static final Dictionary dictionary = new Dictionary(dict_file_path);
 
     public static void main(String[] args) {
         //an abstract class that provides a way to create ServerSocket objects
