@@ -11,10 +11,14 @@ public class Server {
 
     // Identifies the user number connected
     private static int num_clients = 0;
-    private static final String dict_file_path = "dictionaryJSON";
-    private static final Dictionary dictionary = new Dictionary(dict_file_path);
+    //private static String dict_file_path = "dictionaryJSON";
+    private static String dict_file_path = "C:/Users/User/IdeaProjects/ServerDictionary/dictionaryJSON";
+            ;
 
     public static void main(String[] args) {
+        //port = Integer.parseInt(args[0]);
+        //dict_file_path = args[1];
+        Dictionary dictionary = new Dictionary(dict_file_path);
         //an abstract class that provides a way to create ServerSocket objects
         // getDefault() method returns the default system implementation of ServerSocketFactory,
         // which can create normal (non-secure) server sockets

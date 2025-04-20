@@ -12,18 +12,20 @@ import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 
 public class Dictionary { // this class will handle dictionary data
-    private static final String dict_file_path = "dictionaryJSON"; // path from content root
+    //private static final String dict_file_path = "dictionaryJSON";
+
+    ; // path from content root
     private ConcurrentHashMap<String, List<String>> word_meaning_hashmap;
     private Gson gson = new Gson();
 
     // constructor for this class
     public Dictionary(String dict_file_path) {
         word_meaning_hashmap = new ConcurrentHashMap<String, List<String>>();
-        loadDictFile(); //load the dictionary file as Dictionary is initialized
+        loadDictFile(dict_file_path); //load the dictionary file as Dictionary is initialized
     }
 
     //methods for this class:
-    public void loadDictFile(){
+    public void loadDictFile(String dict_file_path){
         //read from file and convert JSON to concurrentHashMap
         try {
             String from_json = Files.readString(Path.of(dict_file_path));
